@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Str;
+$DATABASE_URL = parse_url('DATABASE_URL');
+$db_type = (getenv('APP_ENV') == 'heroku') ? 'pgsql' : 'mysql';
 
 return [
 
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', $db_type),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +36,6 @@ return [
     */
 
     'connections' => [
-
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
@@ -48,8 +49,8 @@ return [
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
+            'database' => env('DB_DATABASE', ''),
+            'username' => env('DB_USERNAME', ''),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
@@ -66,12 +67,13 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8',
+			'host' => ($db_type == 'pgsql') ? $DATABASE_URL['host'] : null,
+            'port' => ($db_type == 'pgsql') ? $DATABASE_URL['port'] : null,
+            'database' => ($db_type == 'pgsql') ? ltrim($DATABASE_URL['path'], '/') : null,
+            'username' => ($db_type == 'pgsql') ? $DATABASE_URL['username'] : null,
+            'password' => ($db_type == 'pgsql') ? $DATABASE_URL['pass'] : null,
+
+			'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
             'schema' => 'public',
