@@ -102,7 +102,15 @@ class ApiUserController extends Controller
             return response()->json($validator->errors());
         } else {
             $user = User::where('email', $request->email)->first();
-            if (!Hash::check($request->password, $user->password, [])) {
+
+            if($user){
+                if (!Hash::check($request->password, $user->password, [])) {
+                    return response()->json([
+                        'status' => 0,
+                        'messages' => 'Invalid email or password.',
+                    ]);
+                }
+            }else{
                 return response()->json([
                     'status' => 0,
                     'messages' => 'Invalid email or password.',
