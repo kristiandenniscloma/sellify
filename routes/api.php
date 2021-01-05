@@ -44,3 +44,9 @@ Route::middleware(['auth:sanctum'])->group(function() {
 		]);
 	});
 });
+
+Route::get('/test-token2', function(){
+	return response()->json([
+		'messages' => 'authenticated',
+	]);
+});
