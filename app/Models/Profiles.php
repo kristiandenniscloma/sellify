@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Profiles extends Model
 {
     use HasFactory;
+	use \App\Http\Traits\UsesUuid;
 	
 	protected $table = 'profiles';
 	
