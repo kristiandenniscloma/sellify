@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ApiUserController;
-use App\Http\Controllers\Api\ApiProfileController;
+use App\Http\Controllers\ApiUserController;
+use App\Http\Controllers\ApiProfileController;
 
 /*
 |--------------------------------------------------------------------------
