@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+use App\Model\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,3 +24,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('test', function(){
+	$user = User::find('eca59440-d9b8-4233-8993-42832b808de7')->first();
+	dd($user);
+});

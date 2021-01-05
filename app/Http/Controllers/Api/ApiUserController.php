@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
+use App\Http\Controllers\Api\ApiProfileController;
 
 /*
 Status Code	Meaning
@@ -25,6 +27,12 @@ class ApiUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	protected $ProfileController;
+	 
+	public function __contruct(ApiProfileController $ProfileController){
+		$this->ProfileController = $ProfileController;
+	}
+	 
     public function index()
     {
         //
@@ -52,13 +60,12 @@ class ApiUserController extends Controller
             ]);
         }
 
-        $user_data = [
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-        ];
-
-        $user = User::create($user_data);
+        ]);
+		
 
         return response()->json([
             'status' => 200,

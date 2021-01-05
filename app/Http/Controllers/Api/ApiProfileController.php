@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Profiles;
 use Illuminate\Http\Request;
 
-class ProfilesController extends Controller
+
+class ApiProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,18 +15,9 @@ class ProfilesController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -35,7 +27,17 @@ class ProfilesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $profile = Profiles::create([
+			'fist_name' => $request->first_name,
+			'last_name' => $request->last_name,
+			'mobile_no' => $request->mobile_no,
+		]);
+		
+        return response()->json([
+            'status' => 200,
+            'messages' => 'Profile stored successfully',
+            'user' => $profile,
+        ]);
     }
 
     /**
@@ -49,16 +51,6 @@ class ProfilesController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Profiles  $profiles
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Profiles $profiles)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
