@@ -38,5 +38,5 @@ Route::post('user/register', [ApiUserController::class, 'store']);
 Route::post('user/login', [ApiUserController::class, 'login']);
 
 Route::middleware(['auth:sanctum'])->group(function() {
-	Route::get('/user/show', [ApiUserController::class, 'show'])
+	Route::get('/user/show', [ApiUserController::class, 'show']);
 });
