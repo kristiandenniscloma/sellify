@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/*
+Status Code	Meaning
+404	Not Found (page or other resource doesn’t exist)
+401	Not authorized (not logged in)
+403	Logged in but access to requested area is forbidden
+400	Bad request (something wrong with URL or parameters)
+422	Unprocessable Entity (validation failed)
+500	General server error
+*/
+
 class ApiUserController extends Controller
 {
     /**
@@ -28,7 +38,6 @@ class ApiUserController extends Controller
      */
     public function store(Request $request)
     {
-        //return response()->json($request->all());
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
@@ -52,7 +61,7 @@ class ApiUserController extends Controller
         $user = User::create($user_data);
 
         return response()->json([
-            'status' => 1,
+            'status' => 200,
             'messages' => 'User registered successfully',
             'user' => $user,
         ]);
@@ -106,13 +115,13 @@ class ApiUserController extends Controller
             if($user){
                 if (!Hash::check($request->password, $user->password, [])) {
                     return response()->json([
-                        'status' => 0,
+                        'status' => 422,
                         'messages' => 'Invalid email or password.',
                     ]);
                 }
             }else{
                 return response()->json([
-                    'status' => 0,
+                    'status' => 422,
                     'messages' => 'Invalid email or password.',
                 ]);
             }
@@ -122,7 +131,7 @@ class ApiUserController extends Controller
             $token = $user_info->createToken('mobile-token')->plainTextToken;
 
             return response()->json([
-                'status' => 1,
+                'status' => 200,
                 'token' => $token,
                 'user' => compact('user'),
             ]);
