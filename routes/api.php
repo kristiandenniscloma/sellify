@@ -40,7 +40,7 @@ Route::post('user/login', [ApiUserController::class, 'login']);
 Route::middleware(['auth:sanctum'])->group(function() {
 	Route::get('/test-token', function(){
 		return response()->json([
-			'messages' => 'authenticated',
+			'messages' => 'authenticated test',
 		]);
 	});
 });
