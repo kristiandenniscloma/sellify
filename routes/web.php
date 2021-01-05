@@ -29,3 +29,8 @@ Route::get('test', function(){
 	$user = User::find('eca59440-d9b8-4233-8993-42832b808de7')->first();
 	dd($user);
 });
+
+Route::get('test-token', function
+	$user = User::find('eca59440-d9b8-4233-8993-42832b808de7')->first();
+	dd($user->tokenCan('server:update'));
+});

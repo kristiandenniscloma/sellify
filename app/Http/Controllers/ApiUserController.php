@@ -109,39 +109,47 @@ class ApiUserController extends Controller
     }
 
     public function login(Request $request){
-        $validator = Validator::make($request->all(), [
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'password' => ['required', 'min:8'],
-        ]);
+		try{
+			$validator = Validator::make($request->all(), [
+				'email' => ['required', 'string', 'email', 'max:255'],
+				'password' => ['required', 'min:8'],
+			]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
-        } else {
-            $user = User::where('email', $request->email)->first();
+			if ($validator->fails()) {
+				return response()->json($validator->errors());
+			} else {
+				$user = User::where('email', $request->email)->first();
 
-            if($user){
-                if (!Hash::check($request->password, $user->password, [])) {
-                    return response()->json([
-                        'status' => 422,
-                        'messages' => 'Invalid email or password.',
-                    ]);
-                }
-            }else{
-                return response()->json([
-                    'status' => 422,
-                    'messages' => 'Invalid email or password.',
-                ]);
-            }
+				if($user){
+					if (!Hash::check($request->password, $user->password, [])) {
+						return response()->json([
+							'status' => 422,
+							'messages' => 'Invalid email or password.',
+						]);
+					}
+				}else{
+					return response()->json([
+						'status' => 422,
+						'messages' => 'Invalid email or password.',
+					]);
+				}
 
-            $user = User::where('email', $request->email)->first();
-            $user_info = $user->first();
-            $token = $user_info->createToken('mobile-token')->plainTextToken;
+				$user = User::where('email', $request->email)->first();
+				$user_info = $user->first();
+				$token = $user_info->createToken('authToken')->plainTextToken;
 
-            return response()->json([
-                'status' => 200,
-                'token' => $token,
-                'user' => compact('user'),
-            ]);
+				return response()->json([
+					'status' => 200,
+					'token' => $token,
+					'user' => compact('user'),
+				]);
+			} catch (Exception $error){
+				return response()->json([
+					'status' => 500,
+					'messages' => 'Error in Login',
+					'error' = $error,
+				]);
+			}
         }
     }
 }
