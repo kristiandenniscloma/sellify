@@ -29,10 +29,10 @@ class ApiProfileController extends Controller
     public function store(Request $request)
     {
 		try{
-			return response()->json([
-				'data' => $request->all(),
-				'user' => $request->user(),
-			]);
+			// return response()->json([
+				// 'data' => $request->all(),
+				// 'user' => $request->user(),
+			// ]);
 			
 			$validator = Validator::make($request->all(), [
 				'first_name' => ['required', 'string', 'max:50'],
