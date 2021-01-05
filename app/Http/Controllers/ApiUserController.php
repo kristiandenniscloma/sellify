@@ -84,7 +84,7 @@ class ApiUserController extends Controller
     {
 		return response()->json([
 			'status' => 200,
-			'user' => $request->user();
+			'user' => $request->user(),
 		]);
     }
 
