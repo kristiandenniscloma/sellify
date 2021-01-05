@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-use App\Model\User;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
