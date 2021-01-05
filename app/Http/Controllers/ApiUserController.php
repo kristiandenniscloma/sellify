@@ -146,13 +146,14 @@ class ApiUserController extends Controller
 					'token' => $token,
 					'user' => compact('user'),
 				]);
-			} catch (Exception $error){
-				return response()->json([
-					'status' => 500,
-					'messages' => 'Error in Login',
-					'error' = $error,
-				]);
-			}
+			} 
+			
+		}catch (Exception $error){
+			return response()->json([
+				'status' => 500,
+				'messages' => 'Error in Login',
+				'error' = $error,
+			]);
         }
     }
 }
