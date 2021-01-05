@@ -31,6 +31,7 @@ class ApiProfileController extends Controller
 		try{
 			return response()->json([
 				'data' => $request->all(),
+				'user' => $request->user(),
 			]);
 			
 			$validator = Validator::make($request->all(), [
