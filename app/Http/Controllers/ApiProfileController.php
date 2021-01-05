@@ -47,6 +47,8 @@ class ApiProfileController extends Controller
 				]);
 			}
 			
+			
+			
 			$profile = Profiles::create([
 				'first_name' => $request->first_name,
 				'last_name' => $request->last_name,
