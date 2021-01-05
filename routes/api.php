@@ -46,7 +46,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 Route::get('/test-token2', function(){
-	dd('test');
 	return response()->json([
 		'messages' => 'authenticated',
 	]);
