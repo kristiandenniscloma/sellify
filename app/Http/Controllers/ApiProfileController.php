@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profiles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 
 class ApiProfileController extends Controller
@@ -27,17 +28,42 @@ class ApiProfileController extends Controller
      */
     public function store(Request $request)
     {
-        $profile = Profiles::create([
-			'fist_name' => $request->first_name,
-			'last_name' => $request->last_name,
-			'mobile_no' => $request->mobile_no,
-		]);
-		
-        return response()->json([
-            'status' => 200,
-            'messages' => 'Profile stored successfully',
-            'user' => $profile,
-        ]);
+		try{
+			return response()->json([
+				'data' => $request,
+			]);
+			
+			$validator = Validator::make($request->all(), [
+				'first_name' => ['required', 'string', 'max:50'],
+				'last_name' => ['required', 'string', 'max:50'],
+				'mobile_no' => ['required', 'string', 'max:20'],
+			]);
+			
+			if($validator->fails()){
+				return response()->json([
+					'status' => 422,
+					'messages' => $validator->errors(),
+				]);
+			}
+			
+			$profile = Profiles::create([
+				'first_name' => $request->first_name,
+				'last_name' => $request->last_name,
+				'mobile_no' => $request->mobile_no,
+			]);
+			
+			return response()->json([
+				'status' => 200,
+				'messages' => 'Profile stored successfully',
+				'user' => $profile,
+			]);
+		}catch(Exception $error){
+			return response()->json([
+				'status' => 500,
+				'messages' => 'Error in store profile',
+				'error' => $error,
+			]);
+		}
     }
 
     /**

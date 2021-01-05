@@ -39,4 +39,6 @@ Route::post('user/login', [ApiUserController::class, 'login']);
 
 Route::middleware(['auth:sanctum'])->group(function() {
 	Route::get('/user/show', [ApiUserController::class, 'show']);
+	Route::post('/user/profile/store', [ApiProfileController::class, 'store']);
 });
+
