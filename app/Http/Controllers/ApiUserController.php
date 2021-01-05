@@ -138,8 +138,8 @@ class ApiUserController extends Controller
 				}
 
 				$user = User::where('email', $request->email)->first();
-				$user_info = $user->first();
-				$token = $user_info->createToken('authToken')->plainTextToken;
+				//$user_info = $user->first();
+				$token = $user->createToken('authToken')->plainTextToken;
 
 				return response()->json([
 					'status' => 200,
