@@ -152,7 +152,7 @@ class ApiUserController extends Controller
 			return response()->json([
 				'status' => 500,
 				'messages' => 'Error in Login',
-				'error' = $error,
+				'error' => $error,
 			]);
         }
     }
