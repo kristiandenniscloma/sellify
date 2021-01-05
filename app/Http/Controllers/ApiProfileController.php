@@ -34,6 +34,8 @@ class ApiProfileController extends Controller
 				// 'user' => $request->user(),
 			// ]);
 			
+			$user = $request->user();
+			
 			$validator = Validator::make($request->all(), [
 				'first_name' => ['required', 'string', 'max:50'],
 				'last_name' => ['required', 'string', 'max:50'],
@@ -47,12 +49,11 @@ class ApiProfileController extends Controller
 				]);
 			}
 			
-			
-			
 			$profile = Profiles::create([
 				'first_name' => $request->first_name,
 				'last_name' => $request->last_name,
 				'mobile_no' => $request->mobile_no,
+				'user_id' => $user->id,
 			]);
 			
 			return response()->json([

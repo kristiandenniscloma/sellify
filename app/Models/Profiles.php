@@ -15,5 +15,6 @@ class Profiles extends Model
 		'first_name',
 		'last_name',
 		'mobile_no',
+		'user_id',
 	];
 }
