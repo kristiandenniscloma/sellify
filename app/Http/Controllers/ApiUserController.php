@@ -3,22 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\User;
+use App\Models\Profiles;
 
 use App\Http\Controllers\ApiProfileController;
 
-/*
-Status Code	Meaning
-404	Not Found (page or other resource doesn’t exist)
-401	Not authorized (not logged in)
-403	Logged in but access to requested area is forbidden
-400	Bad request (something wrong with URL or parameters)
-422	Unprocessable Entity (validation failed)
-500	General server error
-*/
 
 class ApiUserController extends Controller
 {
@@ -27,11 +21,11 @@ class ApiUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	protected $ProfileController;
+	// protected $ProfileController;
 	 
-	public function __contruct(ApiProfileController $ProfileController){
-		$this->ProfileController = $ProfileController;
-	}
+	// public function __construct(ApiProfileController $ProfileController){
+		// $this->ProfileController = $ProfileController;
+	// }
 	 
     public function index()
     {
@@ -46,32 +40,39 @@ class ApiUserController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-        ]);
+		try{
+			$validator = Validator::make($request->all(), [
+				'name' => ['required', 'string', 'max:255'],
+				'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+				'password' => ['required', 'confirmed', 'min:8'],
+			]);
 
-        if ($validator->fails()) {
+			if ($validator->fails()) {
 
-            return response()->json([
-                'status' => 422,
-                'messages' => $validator->errors(),
-            ]);
-        }
+				return response()->json([
+					'status' => 422,
+					'messages' => $validator->errors(),
+				]);
+			}
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+			$user = User::create([
+				'name' => $request->name,
+				'email' => $request->email,
+				'password' => bcrypt($request->password),
+			]);
 		
-
-        return response()->json([
-            'status' => 200,
-            'messages' => 'User registered successfully',
-            'user' => $user,
-        ]);
+			return response()->json([
+				'status' => 200,
+				'messages' => 'User registered successfully',
+				'user' => $user,
+			]);
+		}catch(Exception $error){
+			return response()->json([
+				'status' => 500,
+				'messages' => 'Error in user register',
+				'error' => $error,
+			]);
+		}
     }
 
     /**
@@ -82,9 +83,13 @@ class ApiUserController extends Controller
      */
     public function show(Request $request)
     {
+		$user = $request->user();
+		$profile = Profiles::where('user_id', $user->id)->first();
+		
 		return response()->json([
 			'status' => 200,
 			'user' => $request->user(),
+			'profile' => $profile,
 		]);
     }
 
@@ -95,9 +100,9 @@ class ApiUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+
     }
 
     /**
@@ -155,4 +160,20 @@ class ApiUserController extends Controller
 			]);
         }
     }
+	
+	public function checkAccessToData($user_id, $table, $id){
+		try{
+			$data = DB::table($table)
+			->where('user_id', $user_id)
+			->where('id', $id)->first();
+			
+			return ($data) ? true : false;
+		}catch (Exception $error){
+			return response()->json([
+				'status' => 500,
+				'messages' => 'Error in checkAccessToData',
+				'error' => $error,
+			]);
+        }
+	}
 }

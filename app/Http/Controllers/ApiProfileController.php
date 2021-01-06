@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\Profiles;
 
 
 class ApiProfileController extends Controller
 {
+	
+	private $validation = [
+		'first_name' => ['required', 'string', 'max:50'],
+		'last_name' => ['required', 'string', 'max:50'],
+		'mobile_no' => ['required', 'string', 'max:20'],
+	];
     /**
      * Display a listing of the resource.
      *
@@ -18,8 +26,6 @@ class ApiProfileController extends Controller
     {
         
     }
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -29,18 +35,9 @@ class ApiProfileController extends Controller
     public function store(Request $request)
     {
 		try{
-			// return response()->json([
-				// 'data' => $request->all(),
-				// 'user' => $request->user(),
-			// ]);
-			
 			$user = $request->user();
 			
-			$validator = Validator::make($request->all(), [
-				'first_name' => ['required', 'string', 'max:50'],
-				'last_name' => ['required', 'string', 'max:50'],
-				'mobile_no' => ['required', 'string', 'max:20'],
-			]);
+			$validator = Validator::make($request->all(), $this->validation);
 			
 			if($validator->fails()){
 				return response()->json([
@@ -70,17 +67,6 @@ class ApiProfileController extends Controller
 		}
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Profiles  $profiles
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Profiles $profiles)
-    {
-        //
-    }
-
 
     /**
      * Update the specified resource in storage.
@@ -89,19 +75,39 @@ class ApiProfileController extends Controller
      * @param  \App\Models\Profiles  $profiles
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Profiles $profiles)
+    public function update(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Profiles  $profiles
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Profiles $profiles)
-    {
-        //
+		try{
+			$validator = Validator::make($request->all(), $this->validation);
+			
+			if($validator->fails()){
+				return response()->json([
+					'status' => 422,
+					'messages' => $validator->errors(),
+				]);
+			}
+			
+			$user = $request->user();
+			
+			$profile = tap(DB::table('profiles')
+			->where('user_id', $user->id))
+			->update([
+				'first_name' => $request->first_name,
+				'last_name' => $request->last_name,
+				'mobile_no' => $request->mobile_no,
+			])->first();
+			
+			return response()->json([
+				'status' => 200,
+				'messages' => 'Profile Updated',
+				'profile' => $profile,
+			]);
+		}catch(Exception $error){
+			return response()->json([
+				'status' => 500,
+				'messages' => 'Error in Profile Update',
+				'error' => $error,
+			]);
+		}
     }
 }
