@@ -20,6 +20,7 @@ class CreateSitesTable extends Migration
 			$table->string('category');
 			$table->string('logo_image_path');
 			$table->boolean('enable_menu');
+			$table->boolean('status')->default(0);
             $table->timestamps();
 			
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

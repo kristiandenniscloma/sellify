@@ -8,14 +8,20 @@ class CreatePagesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     *2
      * @return void
      */
     public function up()
     {
         Schema::create('pages', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+			$table->uuid('site_id');
+			$table->string('theme');
+			$table->boolean('status')->default(0);
+			
             $table->timestamps();
+			
+			$table->foreign('site_id')->references('id')->on('sites')->onDelete('cascade');
         });
     }
 

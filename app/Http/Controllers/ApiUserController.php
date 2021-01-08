@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Http\Traits\ResponseTrait;
+use App\Http\Traits\ValidationTrait;
 
 use App\Models\User;
 use App\Models\Profiles;
@@ -16,43 +18,24 @@ use App\Http\Controllers\ApiProfileController;
 
 class ApiUserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-	// protected $ProfileController;
-	 
-	// public function __construct(ApiProfileController $ProfileController){
-		// $this->ProfileController = $ProfileController;
-	// }
+	use ValidationTrait, ResponseTrait;
+	
+	public function __construct(){
+		
+	} 
 	 
     public function index()
     {
-        //
+        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
 		try{
-			$validator = Validator::make($request->all(), [
-				'name' => ['required', 'string', 'max:255'],
-				'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-				'password' => ['required', 'confirmed', 'min:8'],
-			]);
+			$validator = Validator::make($request->all(), $this->validations['user_register']);
 
 			if ($validator->fails()) {
-
-				return response()->json([
-					'status' => 422,
-					'messages' => $validator->errors(),
-				]);
+				return $this->responseMessage($validator->errors(), $request->all(), 'validation_error', '');
 			}
 
 			$user = User::create([
@@ -60,57 +43,25 @@ class ApiUserController extends Controller
 				'email' => $request->email,
 				'password' => bcrypt($request->password),
 			]);
-		
-			return response()->json([
-				'status' => 200,
-				'messages' => 'User registered successfully',
-				'user' => $user,
-			]);
+			
+			return $this->responseMessage('', $request->all(), 'user_register_success', $user);
 		}catch(Exception $error){
-			return response()->json([
-				'status' => 500,
-				'messages' => 'Error in user register',
-				'error' => $error,
-			]);
+			return $this->responseMessage($error, $request->all(), 'general_server_error', '');
 		}
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Request $request)
     {
 		$user = $request->user();
 		$profile = Profiles::where('user_id', $user->id)->first();
-		
-		return response()->json([
-			'status' => 200,
-			'user' => $request->user(),
-			'profile' => $profile,
-		]);
+		return $this->responseMessage('', $request->all(), 'success', ['user'=>$user, 'profile'=>$profile]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request)
     {
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
@@ -118,46 +69,28 @@ class ApiUserController extends Controller
 
     public function login(Request $request){
 		try{
-			$validator = Validator::make($request->all(), [
-				'email' => ['required', 'string', 'email', 'max:255'],
-				'password' => ['required', 'min:8'],
-			]);
+			$validator = Validator::make($request->all(), $this->validations['user_login']);
 
 			if ($validator->fails()) {
-				return response()->json($validator->errors());
+				return $this->responseMessage($validator->errors(), $request->all(), 'validation_error', '');
 			} else {
 				$user = User::where('email', $request->email)->first();
 
 				if($user){
 					if (!Hash::check($request->password, $user->password, [])) {
-						return response()->json([
-							'status' => 422,
-							'messages' => 'Invalid email or password.',
-						]);
+						return $this->responseMessage('', $request->all(), 'invalid_user_login_details', '');
 					}
 				}else{
-					return response()->json([
-						'status' => 422,
-						'messages' => 'Invalid email or password.',
-					]);
+					return $this->responseMessage('', $request->all(), 'invalid_user_login_details', '');
 				}
 
 				$user = User::where('email', $request->email)->first();
 				$token = $user->createToken('authToken')->plainTextToken;
-
-				return response()->json([
-					'status' => 200,
-					'token' => $token,
-					'user' => compact('user'),
-				]);
+				return $this->responseMessage('', $request->all(), 'success', ['user'=>$user, 'token'=> $token]);
 			} 
 			
 		}catch (Exception $error){
-			return response()->json([
-				'status' => 500,
-				'messages' => 'Error in Login',
-				'error' => $error,
-			]);
+			return $this->responseMessage($error, $request->all(), 'general_server_error', '');
         }
     }
 	
@@ -169,11 +102,7 @@ class ApiUserController extends Controller
 			
 			return ($data) ? true : false;
 		}catch (Exception $error){
-			return response()->json([
-				'status' => 500,
-				'messages' => 'Error in checkAccessToData',
-				'error' => $error,
-			]);
+			return $this->responseMessage($error, $request->all(), 'general_server_error', '');
         }
 	}
 }

@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pages extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Http\Traits\UsesUuid;
+	
+	protected $table = 'pages';
+	
+	protected $fillable = [
+		'site_id',
+		'theme',
+	];
 }
